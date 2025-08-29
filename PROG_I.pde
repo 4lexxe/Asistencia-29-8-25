@@ -1,23 +1,13 @@
-int naveX, naveY;
-int naveW = 40, naveH = 40;
-int velocidad = 6;
-
-int enemigoX, enemigoY;
-int enemigoW = 40, enemigoH = 40;
-int enemigoVel = 5;
-
-color enemigoColor;
+Nave nave;
+Enemigo enemigo;
 
 int score = 0;
 boolean gameOver = false;
 
 void setup() {
   size(500, 600);
-  naveX = width/2;
-  naveY = height - 60;
-  enemigoX = int(random(0, width - enemigoW));
-  enemigoY = -enemigoH;
-  enemigoColor = color(random(255), random(255), random(255));
+  nave = new Nave(width/2, height - 60, 40, 40, 6);
+  enemigo = new Enemigo(int(random(0, width-40)), -40, 40, 40, 5);
   textAlign(CENTER, CENTER);
 }
 
@@ -30,39 +20,21 @@ void draw() {
   }
 
   if (!gameOver) {
-    // Dibujar nave (verde fosforescente)
-    fill(0, 255, 100);
-    rect(naveX, naveY, naveW, naveH);
+    nave.mostrar();
+    nave.mover();
 
-    // Movimiento de la nave
-    if (keyPressed) {
-      if (keyCode == LEFT && naveX > 0) naveX -= velocidad;
-      if (keyCode == RIGHT && naveX < width - naveW) naveX += velocidad;
-    }
+    enemigo.mostrar();
+    enemigo.mover();
 
-    // Dibujar enemigo con color aleatorio
-    fill(enemigoColor);
-    rect(enemigoX, enemigoY, enemigoW, enemigoH);
-    enemigoY += enemigoVel;
-
-    // Si el enemigo sale de la pantalla, reiniciarlo
-    if (enemigoY > height) {
-      enemigoY = -enemigoH;
-      enemigoX = int(random(0, width - enemigoW));
-      enemigoVel++; // aumenta la dificultad
+    if (enemigo.y > height) {
+      enemigo.reiniciar();
       score++;
-      enemigoColor = color(random(255), random(255), random(255)); // nuevo color
     }
 
-    // Colisión
-    if (naveX < enemigoX + enemigoW &&
-        naveX + naveW > enemigoX &&
-        naveY < enemigoY + enemigoH &&
-        naveY + naveH > enemigoY) {
+    if (nave.colisionaCon(enemigo)) {
       gameOver = true;
     }
 
-    // Puntaje (amarillo brillante)
     fill(255, 255, 0);
     textSize(20);
     text("Score: " + score, width/2, 30);
@@ -78,14 +50,9 @@ void draw() {
 
 void keyPressed() {
   if (gameOver && (key == 'r' || key == 'R')) {
-    // Reiniciar
     gameOver = false;
     score = 0;
-    naveX = width/2;
-    naveY = height - 60;
-    enemigoX = int(random(0, width - enemigoW));
-    enemigoY = -enemigoH;
-    enemigoVel = 5;
-    enemigoColor = color(random(255), random(255), random(255));
+    nave = new Nave(width/2, height - 60, 40, 40, 6);
+    enemigo = new Enemigo(int(random(0, width-40)), -40, 40, 40, 5);
   }
 }

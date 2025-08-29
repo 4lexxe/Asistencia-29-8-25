@@ -6,6 +6,8 @@ int enemigoX, enemigoY;
 int enemigoW = 40, enemigoH = 40;
 int enemigoVel = 5;
 
+color enemigoColor;
+
 int score = 0;
 boolean gameOver = false;
 
@@ -15,15 +17,21 @@ void setup() {
   naveY = height - 60;
   enemigoX = int(random(0, width - enemigoW));
   enemigoY = -enemigoH;
+  enemigoColor = color(random(255), random(255), random(255));
   textAlign(CENTER, CENTER);
 }
 
 void draw() {
-  background(20);
+  // Fondo con degradado animado
+  for (int i = 0; i < height; i++) {
+    float inter = map(i, 0, height, 0, 1);
+    stroke(lerpColor(color(20, 20, 50), color(50, 0, 100), inter + sin(frameCount*0.01)*0.1));
+    line(0, i, width, i);
+  }
 
   if (!gameOver) {
-    // Dibujar nave
-    fill(0, 200, 255);
+    // Dibujar nave (verde fosforescente)
+    fill(0, 255, 100);
     rect(naveX, naveY, naveW, naveH);
 
     // Movimiento de la nave
@@ -32,8 +40,8 @@ void draw() {
       if (keyCode == RIGHT && naveX < width - naveW) naveX += velocidad;
     }
 
-    // Dibujar enemigo
-    fill(255, 50, 50);
+    // Dibujar enemigo con color aleatorio
+    fill(enemigoColor);
     rect(enemigoX, enemigoY, enemigoW, enemigoH);
     enemigoY += enemigoVel;
 
@@ -41,8 +49,9 @@ void draw() {
     if (enemigoY > height) {
       enemigoY = -enemigoH;
       enemigoX = int(random(0, width - enemigoW));
-      score++;
       enemigoVel++; // aumenta la dificultad
+      score++;
+      enemigoColor = color(random(255), random(255), random(255)); // nuevo color
     }
 
     // Colisión
@@ -53,8 +62,8 @@ void draw() {
       gameOver = true;
     }
 
-    // Puntaje
-    fill(255);
+    // Puntaje (amarillo brillante)
+    fill(255, 255, 0);
     textSize(20);
     text("Score: " + score, width/2, 30);
   } else {
@@ -77,5 +86,6 @@ void keyPressed() {
     enemigoX = int(random(0, width - enemigoW));
     enemigoY = -enemigoH;
     enemigoVel = 5;
+    enemigoColor = color(random(255), random(255), random(255));
   }
 }
